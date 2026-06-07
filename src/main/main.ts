@@ -8,6 +8,7 @@ import {
   Menu,
   shell,
   screen,
+  nativeImage,
 } from "electron";
 import * as path from "path";
 import { GoogleAuthService } from "./services/google-auth";
@@ -60,7 +61,7 @@ function createMainWindow() {
     mainWindow.loadURL("http://localhost:3000");
   } else {
     mainWindow.loadFile(
-      path.join(__dirname, "../renderer/index.html"),
+      path.join(__dirname, "renderer", "index.html"),
     );
   }
 
@@ -95,7 +96,12 @@ function createSettingsWindow() {
     );
   } else {
     settingsWindow.loadFile(
-      path.join(__dirname, "../renderer/settings.html"),
+      path.join(
+        __dirname,
+        "renderer",
+        "public",
+        "settings.html",
+      ),
     );
   }
 
@@ -106,11 +112,26 @@ function createSettingsWindow() {
 
 function createTray() {
   // トレイアイコンの作成（アイコンファイルは後で追加）
-  const iconPath = path.join(
-    __dirname,
-    "../public/icon.png",
-  );
-  tray = new Tray(iconPath);
+  const iconCandidates = [
+    path.join(__dirname, "renderer", "public", "icon.png"),
+    path.join(__dirname, "public", "icon.png"),
+    path.join(__dirname, "renderer", "icon.png"),
+    path.join(__dirname, "icon.png"),
+  ];
+
+  let trayIcon = null;
+  for (const p of iconCandidates) {
+    const img = nativeImage.createFromPath(p);
+    if (!img.isEmpty()) {
+      trayIcon = img;
+      break;
+    }
+  }
+  if (!trayIcon) {
+    trayIcon = nativeImage.createEmpty();
+  }
+
+  tray = new Tray(trayIcon);
 
   const contextMenu = Menu.buildFromTemplate([
     {

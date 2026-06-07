@@ -20,19 +20,23 @@ export interface CalendarEvent {
 }
 
 export class GoogleCalendarService {
-  private calendar: calendar_v3.Calendar;
+  private authService: GoogleAuthService;
 
   constructor(authService: GoogleAuthService) {
-    this.calendar = google.calendar({
+    this.authService = authService;
+  }
+
+  private get calendarClient(): calendar_v3.Calendar {
+    return google.calendar({
       version: "v3",
-      auth: authService.getClient(),
+      auth: this.authService.getClient(),
     });
   }
 
   async getCalendarList(): Promise<CalendarListItem[]> {
     try {
       const response =
-        await this.calendar.calendarList.list();
+        await this.calendarClient.calendarList.list();
       const items = response.data.items || [];
 
       return items.map((item) => ({
@@ -53,13 +57,14 @@ export class GoogleCalendarService {
     timeMax: string,
   ): Promise<CalendarEvent[]> {
     try {
-      const response = await this.calendar.events.list({
-        calendarId: calendarId,
-        timeMin: timeMin,
-        timeMax: timeMax,
-        singleEvents: true,
-        orderBy: "startTime",
-      });
+      const response =
+        await this.calendarClient.events.list({
+          calendarId: calendarId,
+          timeMin: timeMin,
+          timeMax: timeMax,
+          singleEvents: true,
+          orderBy: "startTime",
+        });
 
       const events = response.data.items || [];
 

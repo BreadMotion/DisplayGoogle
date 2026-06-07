@@ -18,18 +18,23 @@ export interface Task {
 }
 
 export class GoogleTasksService {
-  private tasks: tasks_v1.Tasks;
+  private authService: GoogleAuthService;
 
   constructor(authService: GoogleAuthService) {
-    this.tasks = google.tasks({
+    this.authService = authService;
+  }
+
+  private get tasksClient(): tasks_v1.Tasks {
+    return google.tasks({
       version: "v1",
-      auth: authService.getClient(),
+      auth: this.authService.getClient(),
     });
   }
 
   async getTaskLists(): Promise<TaskList[]> {
     try {
-      const response = await this.tasks.tasklists.list();
+      const response =
+        await this.tasksClient.tasklists.list();
       const items = response.data.items || [];
 
       return items.map((item) => ({
@@ -44,7 +49,7 @@ export class GoogleTasksService {
 
   async getTasks(taskListId: string): Promise<Task[]> {
     try {
-      const response = await this.tasks.tasks.list({
+      const response = await this.tasksClient.tasks.list({
         tasklist: taskListId,
         showCompleted: true,
         showHidden: false,
