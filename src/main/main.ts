@@ -65,8 +65,10 @@ function createMainWindow() {
     );
   }
 
-  // クリックスルー設定（初期状態）
-  mainWindow.setIgnoreMouseEvents(true, { forward: true });
+  // クリックスルー設定（初期状態：認証画面ではマウスイベントを有効化）
+  // 認証完了後はレンダラから `window.electronAPI.toggleMouseEvents(true)` を呼んで
+  // クリックスルーモードに切り替えてください
+  mainWindow.setIgnoreMouseEvents(false);
 
   mainWindow.on("closed", () => {
     mainWindow = null;
