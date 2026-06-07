@@ -38,6 +38,11 @@ export class GoogleCalendarService {
       const response =
         await this.calendarClient.calendarList.list();
       const items = response.data.items || [];
+      console.log(
+        "[main] GoogleCalendarService.getCalendarList ->",
+        items.length,
+        "items",
+      );
 
       return items.map((item) => ({
         id: item.id || "",
@@ -57,6 +62,9 @@ export class GoogleCalendarService {
     timeMax: string,
   ): Promise<CalendarEvent[]> {
     try {
+      console.log(
+        `[main] GoogleCalendarService.getEvents -> calendarId=${calendarId} timeMin=${timeMin} timeMax=${timeMax}`,
+      );
       const response =
         await this.calendarClient.events.list({
           calendarId: calendarId,
@@ -67,6 +75,11 @@ export class GoogleCalendarService {
         });
 
       const events = response.data.items || [];
+      console.log(
+        "[main] GoogleCalendarService.getEvents -> returned",
+        events.length,
+        "events",
+      );
 
       return events.map((event) => ({
         id: event.id || "",

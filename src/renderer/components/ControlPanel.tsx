@@ -255,36 +255,51 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
           className="calendar-selector"
           style={{ position: "relative" }}
         >
-          <select
-            multiple
-            value={selectedCalendars}
-            onChange={(e) => {
-              const options = Array.from(
-                e.target.selectedOptions,
-              );
-              onCalendarsChange(
-                options.map((opt) => opt.value),
-              );
-            }}
-            style={{
-              padding: "8px",
-              borderRadius: "4px",
-              border: "1px solid #dadce0",
-              backgroundColor: "white",
-              cursor: "pointer",
-              minWidth: "150px",
-              maxHeight: "120px",
-            }}
-          >
-            {calendars.map((calendar) => (
-              <option key={calendar.id} value={calendar.id}>
-                {selectedCalendars.includes(calendar.id)
-                  ? "✓ "
-                  : ""}
-                {calendar.summary}
-              </option>
-            ))}
-          </select>
+          {calendars && calendars.length > 0 ? (
+            <select
+              multiple
+              value={selectedCalendars}
+              onChange={(e) => {
+                const options = Array.from(
+                  e.target.selectedOptions,
+                );
+                onCalendarsChange(
+                  options.map((opt) => opt.value),
+                );
+              }}
+              style={{
+                padding: "8px",
+                borderRadius: "4px",
+                border: "1px solid #dadce0",
+                backgroundColor: "white",
+                cursor: "pointer",
+                minWidth: "150px",
+                maxHeight: "120px",
+              }}
+            >
+              {calendars.map((calendar) => (
+                <option
+                  key={calendar.id}
+                  value={calendar.id}
+                >
+                  {selectedCalendars.includes(calendar.id)
+                    ? "✓ "
+                    : ""}
+                  {calendar.summary}
+                </option>
+              ))}
+            </select>
+          ) : (
+            <div
+              style={{
+                minWidth: "150px",
+                padding: "8px",
+                color: "#666",
+              }}
+            >
+              カレンダーがありません
+            </div>
+          )}
         </div>
       )}
 

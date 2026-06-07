@@ -82,24 +82,9 @@ function App() {
     }
   }, [isAuthenticated, selectedTaskList, viewMode]);
 
-  useEffect(() => {
-    const interval = setInterval(
-      () => {
-        if (isAuthenticated) {
-          loadEvents();
-          loadTasks();
-          setLastSync(new Date());
-        }
-      },
-      10 * 60 * 1000,
-    ); // 10分ごとに同期
-
-    return () => clearInterval(interval);
-  }, [
-    isAuthenticated,
-    selectedCalendars,
-    selectedTaskList,
-  ]);
+  // 定期同期は廃止（同期はユーザ操作のボタンで行うため）
+  // 以前は setInterval で 10 分毎に同期していましたが、ここを削除しました。
+  // 同期の挙動は handleSync に集約しています。
 
   const checkAuth = async () => {
     try {
@@ -144,8 +129,16 @@ function App() {
 
   const loadCalendars = async () => {
     try {
+      console.log(
+        "[renderer] loadCalendars: requesting calendar list",
+      );
       const calendarList =
         await window.electronAPI.getCalendarList();
+      console.log(
+        "[renderer] loadCalendars: received",
+        calendarList.length,
+        "calendars",
+      );
       setCalendars(calendarList);
       if (calendarList.length > 0) {
         setSelectedCalendars([calendarList[0].id]);
@@ -158,15 +151,32 @@ function App() {
   const loadEvents = async () => {
     try {
       const allEvents: CalendarEvent[] = [];
+      const { timeMin, timeMax } = getTimeRange();
+      console.log(
+        "[renderer] loadEvents: time range",
+        timeMin,
+        timeMax,
+        "selectedCalendars:",
+        selectedCalendars,
+      );
 
       for (const calendarId of selectedCalendars) {
-        const { timeMin, timeMax } = getTimeRange();
+        console.log(
+          "[renderer] loadEvents: fetching",
+          calendarId,
+        );
         const calendarEvents =
           await window.electronAPI.getCalendarEvents(
             calendarId,
             timeMin,
             timeMax,
           );
+        console.log(
+          "[renderer] loadEvents: fetched",
+          calendarEvents.length,
+          "events for",
+          calendarId,
+        );
         allEvents.push(...calendarEvents);
       }
 

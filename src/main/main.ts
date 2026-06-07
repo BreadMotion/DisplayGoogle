@@ -186,7 +186,14 @@ ipcMain.handle("auth:logout", async () => {
 });
 
 ipcMain.handle("calendar:list", async () => {
-  return await calendarService.getCalendarList();
+  console.log("[main] IPC calendar:list invoked");
+  const list = await calendarService.getCalendarList();
+  console.log(
+    "[main] IPC calendar:list ->",
+    list.length,
+    "items",
+  );
+  return list;
 });
 
 ipcMain.handle(
@@ -197,11 +204,23 @@ ipcMain.handle(
     timeMin: string,
     timeMax: string,
   ) => {
-    return await calendarService.getEvents(
+    console.log(
+      "[main] IPC calendar:events ->",
       calendarId,
       timeMin,
       timeMax,
     );
+    const ev = await calendarService.getEvents(
+      calendarId,
+      timeMin,
+      timeMax,
+    );
+    console.log(
+      "[main] IPC calendar:events -> returned",
+      ev.length,
+      "events",
+    );
+    return ev;
   },
 );
 

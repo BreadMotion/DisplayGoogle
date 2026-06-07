@@ -60,19 +60,31 @@ export class GoogleAuthService {
       scope: SCOPES,
     });
 
+    console.log(
+      "[main] GoogleAuthService.authenticate -> opening auth window",
+    );
     const authCode =
       await this.getAuthCodeFromUser(authUrl);
     if (!authCode) {
+      console.log(
+        "[main] GoogleAuthService.authenticate -> auth cancelled or no code",
+      );
       return false;
     }
 
     try {
+      console.log(
+        "[main] GoogleAuthService.authenticate -> exchanging code for tokens",
+      );
       const { tokens } =
         await this.oauth2Client.getToken(authCode);
       this.oauth2Client.setCredentials(tokens);
       fs.writeFileSync(
         this.tokenPath,
         JSON.stringify(tokens),
+      );
+      console.log(
+        "[main] GoogleAuthService.authenticate -> tokens saved",
       );
       return true;
     } catch (error) {
@@ -143,10 +155,17 @@ export class GoogleAuthService {
         (event, url) => {
           // event は使用しないが、noUnusedParameters のエラー回避のため参照しておく
           void event;
+          console.log(
+            "[main] authWindow will-redirect ->",
+            url,
+          );
           const urlObj = new URL(url);
           const code = urlObj.searchParams.get("code");
 
           if (code) {
+            console.log(
+              "[main] authWindow -> code received",
+            );
             authWindow.close();
             resolve(code);
           }
