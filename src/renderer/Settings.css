@@ -1,0 +1,147 @@
+.settings {
+  width: 100%;
+  min-height: 100vh;
+  background: #f5f7fa;
+  font-family: 'Segoe UI', 'Yu Gothic UI', 'Meiryo UI', sans-serif;
+}
+
+.settings-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 24px 32px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.settings-header h1 {
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.settings-content {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 32px 24px;
+}
+
+.settings-section {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.settings-section h2 {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: #333;
+}
+
+.section-description {
+  color: #666;
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+
+.auth-status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.status-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.status-indicator.connected .status-dot {
+  background: #34a853;
+  box-shadow: 0 0 8px rgba(52, 168, 83, 0.5);
+}
+
+.status-indicator.disconnected .status-dot {
+  background: #ea4335;
+}
+
+.button {
+  padding: 10px 24px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.button-primary {
+  background: #4285f4;
+  color: white;
+}
+
+.button-primary:hover {
+  background: #357ae8;
+  box-shadow: 0 2px 8px rgba(66, 133, 244, 0.3);
+}
+
+.button-secondary {
+  background: white;
+  color: #666;
+  border: 1px solid #ddd;
+}
+
+.button-secondary:hover {
+  background: #f5f5f5;
+  border-color: #ccc;
+}
+
+.button-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.button-group .button {
+  width: 100%;
+  text-align: left;
+  font-size: 15px;
+}
+
+.feature-list {
+  list-style: none;
+  padding: 0;
+}
+
+.feature-list li {
+  padding: 12px 0;
+  border-bottom: 1px solid #f0f0f0;
+  color: #555;
+  font-size: 14px;
+}
+
+.feature-list li:last-child {
+  border-bottom: none;
+}
+
+.feature-list li:before {
+  content: '✓';
+  color: #34a853;
+  font-weight: bold;
+  margin-right: 12px;
+}
+
+.version-info {
+  color: #888;
+  font-size: 13px;
+  margin: 8px 0;
+}
