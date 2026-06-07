@@ -65,10 +65,14 @@ function createMainWindow() {
     );
   }
 
-  // クリックスルー設定（初期状態：認証画面ではマウスイベントを有効化）
-  // 認証完了後はレンダラから `window.electronAPI.toggleMouseEvents(true)` を呼んで
-  // クリックスルーモードに切り替えてください
-  mainWindow.setIgnoreMouseEvents(false);
+  // クリックスルー設定（初期状態：クリックスルー）
+  // forward: true により mousemove はレンダラにフォワードされますが、クリックは
+  // OS 側に透過されます。認証や UI 操作時にレンダラで入力を受け取りたい場合は
+  // レンダラから `window.electronAPI.toggleMouseEvents(false)` を呼んでください。
+  mainWindow.setIgnoreMouseEvents(true, { forward: true });
+  console.log(
+    "[main] mainWindow initialized: setIgnoreMouseEvents(true, { forward: true })",
+  );
 
   mainWindow.on("closed", () => {
     mainWindow = null;
@@ -219,11 +223,18 @@ ipcMain.handle("open:browser", async (_, url: string) => {
 ipcMain.handle(
   "window:toggle-mouse",
   async (_, ignore: boolean) => {
+    console.log(
+      `[main] IPC window:toggle-mouse -> ${ignore}`,
+    );
     if (mainWindow) {
       mainWindow.setIgnoreMouseEvents(ignore, {
         forward: true,
       });
+      console.log(
+        `[main] mainWindow.setIgnoreMouseEvents(${ignore}) called`,
+      );
     }
+    return true;
   },
 );
 

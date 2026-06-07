@@ -113,6 +113,24 @@ function App() {
     }
   };
 
+  // メインウィンドウのマウス入力（クリックスルー）を切り替える
+  // - 未認証（ログイン画面表示中）はクリックを受け取るようにする
+  // - 認証済みや壁紙表示時はクリックスルーに戻す
+  useEffect(() => {
+    if (isLoading) return;
+    try {
+      if (!isAuthenticated) {
+        // 有効化（クリックを受け取る）
+        window.electronAPI.toggleMouseEvents(false);
+      } else {
+        // クリックスルーに戻す
+        window.electronAPI.toggleMouseEvents(true);
+      }
+    } catch (e) {
+      console.error("toggle mouse error:", e);
+    }
+  }, [isAuthenticated, isLoading]);
+
   const handleLogin = async () => {
     try {
       const success = await window.electronAPI.login();
