@@ -4,8 +4,10 @@
     "module": "CommonJS",
     "noEmit": false,
     "outDir": "dist",
-    "jsx": "preserve"
+    "jsx": "preserve",
+    "moduleResolution": "node",
+    "allowImportingTsExtensions": false,
   },
   "include": ["src/main/**/*"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules"],
 }

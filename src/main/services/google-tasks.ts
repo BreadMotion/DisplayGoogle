@@ -1,5 +1,5 @@
-import { google, tasks_v1 } from 'googleapis';
-import { GoogleAuthService } from './google-auth';
+import { google, tasks_v1 } from "googleapis";
+import { GoogleAuthService } from "./google-auth";
 
 export interface TaskList {
   id: string;
@@ -20,8 +20,11 @@ export interface Task {
 export class GoogleTasksService {
   private tasks: tasks_v1.Tasks;
 
-  constructor(private authService: GoogleAuthService) {
-    this.tasks = google.tasks({ version: 'v1', auth: authService.getClient() });
+  constructor(authService: GoogleAuthService) {
+    this.tasks = google.tasks({
+      version: "v1",
+      auth: authService.getClient(),
+    });
   }
 
   async getTaskLists(): Promise<TaskList[]> {
@@ -30,11 +33,11 @@ export class GoogleTasksService {
       const items = response.data.items || [];
 
       return items.map((item) => ({
-        id: item.id || '',
-        title: item.title || '',
+        id: item.id || "",
+        title: item.title || "",
       }));
     } catch (error) {
-      console.error('タスクリストの取得に失敗:', error);
+      console.error("タスクリストの取得に失敗:", error);
       throw error;
     }
   }
@@ -50,17 +53,19 @@ export class GoogleTasksService {
       const items = response.data.items || [];
 
       return items.map((item) => ({
-        id: item.id || '',
-        title: item.title || '(タイトルなし)',
-        notes: item.notes,
-        status: item.status || 'needsAction',
-        due: item.due,
-        completed: item.completed,
-        parent: item.parent,
-        links: item.links as Array<{ type: string; link: string }> | undefined,
+        id: item.id || "",
+        title: item.title || "(タイトルなし)",
+        notes: item.notes ?? undefined,
+        status: item.status || "needsAction",
+        due: item.due ?? undefined,
+        completed: item.completed ?? undefined,
+        parent: item.parent ?? undefined,
+        links: (item.links ?? undefined) as
+          | Array<{ type: string; link: string }>
+          | undefined,
       }));
     } catch (error) {
-      console.error('タスクの取得に失敗:', error);
+      console.error("タスクの取得に失敗:", error);
       throw error;
     }
   }

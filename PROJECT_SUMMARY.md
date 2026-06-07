@@ -81,22 +81,77 @@ npm install
 ```
 
 ### 2. Google Cloud Consoleの設定
-詳細は `SETUP.md` を参照してください:
+SETUP.md の「ステップ2: Google Cloud Consoleの設定」を参照:
 - プロジェクト作成
-- APIの有効化(Google Calendar API, Google Tasks API)
+- APIの有効化 (Google Calendar API, Google Tasks API)
 - OAuth 2.0認証情報の作成
 - クライアントIDとシークレットの取得
 
-### 3. 認証情報の設定
-`src/main/services/google-auth.ts` にクライアントIDとシークレットを設定
+### 3. 認証情報の設定 (重要❗️ 機密情報をコードに埋め込まない)
 
-### 4. トレイアイコンの準備
-`public/icon.png` に32x32または64x64のPNG画像を配置
+**推奨: `.env` ファイルを使用する**
+```bash
+cp .env.example .env
+# .env ファイルを編集して認証情報を入力
+```
 
-### 5. 開発サーバーの起動
+**または: アプリ実行中に設定画面から設定する**
+- アプリ起動 → システムトレイ → 設定を開く → 「Google API クレデンシャル」セクション → 値を入力して保存
+
+### 4. トレイアイコンの準備 (任意)
+`public/icon.png` に 32x32 または 64x64 の PNG 画像を配置
+
+### 5. 開発サーバー起動
 ```bash
 npm run dev
 ```
+
+## 実装した変更内容 (機密情報管理の強化)
+
+### main.ts の変更
+- dotenv の読み込み (process.env を仮想化)
+- electron-store のインスタンス化
+- 設定取得 / 保存を事務処理する IPC ハンドラ追加
+  - `settings:get` - 設定を取得
+  - `settings:set` - 設定を保存
+
+### preload.ts の変更
+- レンダラープロセスからアクセスできる API を拡張
+  - `getSettings()`
+  - `saveSettings()`
+
+### google-auth.ts の変更
+- `createOAuth2Client()` を修正
+  - electron-store を初期化
+  - process.env → electron-store の順序で認証情報を取得
+  - 未設定時はわかりやすいエラーをスロー
+- `authenticate()` の堅牢化 (クライアント作成失敗時)
+
+### settings.tsx の変更
+- 「Google API クレデンシャル」セクションを新規追加
+  - Client ID / Client Secret / Redirect URI を入力できるフォーム
+  - 保存ボタンと事成時表示を実装
+
+### types/index.ts の変更
+- `ElectronAPI` に新規 API を追加
+  - `getSettings()`
+  - `saveSettings()`
+
+### 新規ファイル
+- `.env.example` - 環境変数のテンプレート
+
+## 保障方法
+
+### 開発時
+1. `.env.example` をコピーして `.env` を作成
+2. `.env` に認証情報を入力
+3. `.env` は `.gitignore` に登録されており、Git 上に漏洞しない
+
+### ユーザー向け (実装時)
+1. アプリ実行
+2. システムトレイ → 設定を開く
+3. 「Google API クレデンシャル」セクションで値を入力して保存
+
 
 ## 未実装の機能(将来の拡張)
 

@@ -141,6 +141,8 @@ export class GoogleAuthService {
       authWindow.webContents.on(
         "will-redirect",
         (event, url) => {
+          // event は使用しないが、noUnusedParameters のエラー回避のため参照しておく
+          void event;
           const urlObj = new URL(url);
           const code = urlObj.searchParams.get("code");
 

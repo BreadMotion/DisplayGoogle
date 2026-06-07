@@ -1,27 +1,49 @@
-import React, { useState, useEffect } from 'react';
-import { CalendarView } from './components/CalendarView';
-import { TasksView } from './components/TasksView';
-import { ControlPanel } from './components/ControlPanel';
-import { EventModal } from './components/EventModal';
-import { LoadingScreen } from './components/LoadingScreen';
-import { CalendarEvent, Task, ViewMode, CalendarViewType, CalendarListItem, TaskList } from './types';
-import './App.css';
+import React, { useState, useEffect } from "react";
+import CalendarView from "./components/CalendarView";
+import TasksView from "./components/TasksView";
+import { ControlPanel } from "./components/ControlPanel";
+import { EventModal } from "./components/EventModal";
+import { LoadingScreen } from "./components/LoadingScreen";
+import {
+  CalendarEvent,
+  Task,
+  ViewMode,
+  CalendarViewType,
+  CalendarListItem,
+  TaskList,
+} from "./types";
+import "./App.css";
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] =
+    useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [viewMode, setViewMode] = useState<ViewMode>('calendar');
-  const [calendarViewType, setCalendarViewType] = useState<CalendarViewType>('week');
-  const [currentDate, setCurrentDate] = useState(new Date());
-  const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
-  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
-  const [calendars, setCalendars] = useState<CalendarListItem[]>([]);
-  const [selectedCalendars, setSelectedCalendars] = useState<string[]>([]);
+  const [viewMode, setViewMode] =
+    useState<ViewMode>("calendar");
+  const [calendarViewType, setCalendarViewType] =
+    useState<CalendarViewType>("week");
+  const [currentDate, setCurrentDate] = useState(
+    new Date(),
+  );
+  const [selectedEvent, setSelectedEvent] =
+    useState<CalendarEvent | null>(null);
+  const [selectedTask, setSelectedTask] =
+    useState<Task | null>(null);
+  const [calendars, setCalendars] = useState<
+    CalendarListItem[]
+  >([]);
+  const [selectedCalendars, setSelectedCalendars] =
+    useState<string[]>([]);
   const [events, setEvents] = useState<CalendarEvent[]>([]);
-  const [taskLists, setTaskLists] = useState<TaskList[]>([]);
-  const [selectedTaskList, setSelectedTaskList] = useState<string>('');
+  const [taskLists, setTaskLists] = useState<TaskList[]>(
+    [],
+  );
+  const [selectedTaskList, setSelectedTaskList] =
+    useState<string>("");
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [lastSync, setLastSync] = useState<Date>(new Date());
+  const [lastSync, setLastSync] = useState<Date>(
+    new Date(),
+  );
 
   useEffect(() => {
     checkAuth();
@@ -35,35 +57,57 @@ function App() {
   }, [isAuthenticated]);
 
   useEffect(() => {
-    if (isAuthenticated && selectedCalendars.length > 0 && viewMode === 'calendar') {
+    if (
+      isAuthenticated &&
+      selectedCalendars.length > 0 &&
+      viewMode === "calendar"
+    ) {
       loadEvents();
     }
-  }, [isAuthenticated, selectedCalendars, currentDate, calendarViewType, viewMode]);
+  }, [
+    isAuthenticated,
+    selectedCalendars,
+    currentDate,
+    calendarViewType,
+    viewMode,
+  ]);
 
   useEffect(() => {
-    if (isAuthenticated && selectedTaskList && viewMode === 'tasks') {
+    if (
+      isAuthenticated &&
+      selectedTaskList &&
+      viewMode === "tasks"
+    ) {
       loadTasks();
     }
   }, [isAuthenticated, selectedTaskList, viewMode]);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      if (isAuthenticated) {
-        loadEvents();
-        loadTasks();
-        setLastSync(new Date());
-      }
-    }, 10 * 60 * 1000); // 10分ごとに同期
+    const interval = setInterval(
+      () => {
+        if (isAuthenticated) {
+          loadEvents();
+          loadTasks();
+          setLastSync(new Date());
+        }
+      },
+      10 * 60 * 1000,
+    ); // 10分ごとに同期
 
     return () => clearInterval(interval);
-  }, [isAuthenticated, selectedCalendars, selectedTaskList]);
+  }, [
+    isAuthenticated,
+    selectedCalendars,
+    selectedTaskList,
+  ]);
 
   const checkAuth = async () => {
     try {
-      const authenticated = await window.electronAPI.checkAuth();
+      const authenticated =
+        await window.electronAPI.checkAuth();
       setIsAuthenticated(authenticated);
     } catch (error) {
-      console.error('認証チェックエラー:', error);
+      console.error("認証チェックエラー:", error);
     } finally {
       setIsLoading(false);
     }
@@ -76,19 +120,20 @@ function App() {
         setIsAuthenticated(true);
       }
     } catch (error) {
-      console.error('ログインエラー:', error);
+      console.error("ログインエラー:", error);
     }
   };
 
   const loadCalendars = async () => {
     try {
-      const calendarList = await window.electronAPI.getCalendarList();
+      const calendarList =
+        await window.electronAPI.getCalendarList();
       setCalendars(calendarList);
       if (calendarList.length > 0) {
         setSelectedCalendars([calendarList[0].id]);
       }
     } catch (error) {
-      console.error('カレンダー一覧の取得エラー:', error);
+      console.error("カレンダー一覧の取得エラー:", error);
     }
   };
 
@@ -98,17 +143,18 @@ function App() {
 
       for (const calendarId of selectedCalendars) {
         const { timeMin, timeMax } = getTimeRange();
-        const calendarEvents = await window.electronAPI.getCalendarEvents(
-          calendarId,
-          timeMin,
-          timeMax
-        );
+        const calendarEvents =
+          await window.electronAPI.getCalendarEvents(
+            calendarId,
+            timeMin,
+            timeMax,
+          );
         allEvents.push(...calendarEvents);
       }
 
       setEvents(allEvents);
     } catch (error) {
-      console.error('イベントの取得エラー:', error);
+      console.error("イベントの取得エラー:", error);
     }
   };
 
@@ -120,7 +166,7 @@ function App() {
         setSelectedTaskList(lists[0].id);
       }
     } catch (error) {
-      console.error('タスクリストの取得エラー:', error);
+      console.error("タスクリストの取得エラー:", error);
     }
   };
 
@@ -128,10 +174,12 @@ function App() {
     if (!selectedTaskList) return;
 
     try {
-      const taskItems = await window.electronAPI.getTasks(selectedTaskList);
+      const taskItems = await window.electronAPI.getTasks(
+        selectedTaskList,
+      );
       setTasks(taskItems);
     } catch (error) {
-      console.error('タスクの取得エラー:', error);
+      console.error("タスクの取得エラー:", error);
     }
   };
 
@@ -140,13 +188,13 @@ function App() {
     let timeMax: Date;
 
     switch (calendarViewType) {
-      case 'day':
+      case "day":
         timeMin = new Date(currentDate);
         timeMin.setHours(0, 0, 0, 0);
         timeMax = new Date(currentDate);
         timeMax.setHours(23, 59, 59, 999);
         break;
-      case 'week':
+      case "week":
         timeMin = new Date(currentDate);
         const day = timeMin.getDay();
         timeMin.setDate(timeMin.getDate() - day);
@@ -155,9 +203,21 @@ function App() {
         timeMax.setDate(timeMax.getDate() + 6);
         timeMax.setHours(23, 59, 59, 999);
         break;
-      case 'month':
-        timeMin = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-        timeMax = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0, 23, 59, 59, 999);
+      case "month":
+        timeMin = new Date(
+          currentDate.getFullYear(),
+          currentDate.getMonth(),
+          1,
+        );
+        timeMax = new Date(
+          currentDate.getFullYear(),
+          currentDate.getMonth() + 1,
+          0,
+          23,
+          59,
+          59,
+          999,
+        );
         break;
     }
 
@@ -168,7 +228,7 @@ function App() {
   };
 
   const handleSync = async () => {
-    if (viewMode === 'calendar') {
+    if (viewMode === "calendar") {
       await loadEvents();
     } else {
       await loadTasks();
@@ -198,7 +258,10 @@ function App() {
         <div className="auth-container">
           <h1>Display Google</h1>
           <p>Googleカレンダーとタスクを壁紙に表示します</p>
-          <button onClick={handleLogin} className="login-button">
+          <button
+            onClick={handleLogin}
+            className="login-button"
+          >
             Googleアカウントでログイン
           </button>
         </div>
@@ -225,7 +288,7 @@ function App() {
         onSync={handleSync}
       />
 
-      {viewMode === 'calendar' ? (
+      {viewMode === "calendar" ? (
         <CalendarView
           viewType={calendarViewType}
           currentDate={currentDate}
@@ -233,7 +296,10 @@ function App() {
           onEventClick={handleEventClick}
         />
       ) : (
-        <TasksView tasks={tasks} onTaskClick={handleTaskClick} />
+        <TasksView
+          tasks={tasks}
+          onTaskClick={handleTaskClick}
+        />
       )}
 
       {selectedEvent && (
